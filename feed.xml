@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Blog Name</title>
+  <subtitle>Blog subtitle</subtitle>
+  <id>http://blog.url.com/blog</id>
+  <link href="http://blog.url.com/blog"/>
+  <link href="http://blog.url.com/feed.xml" rel="self"/>
+  <updated>2014-02-02T01:13:00+09:00</updated>
+  <author>
+    <name>Blog Author</name>
+  </author>
+  <entry>
+    <title>MiddlemanでGitHub Pagesにブログをつくる</title>
+    <link rel="alternate" href="http://blog.url.com/blog/2014/02/02/make-middleman-blog.html"/>
+    <id>http://blog.url.com/blog/2014/02/02/make-middleman-blog.html</id>
+    <published>2014-02-02T01:13:00+09:00</published>
+    <updated>2014-07-13T17:00:28+09:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;p&gt;Middlemanのブログめっちゃはやい…よい…。&lt;br&gt;
+黒い画面使える人にはCMS使って動的なブログ運営するよりこっちの方がいいんじゃないかと思う今日このごろです。&lt;/p&gt;
+
+&lt;p&gt;今回ブログを移行しようと思って、だいたいこんな感じで設置したいなーとおもってたんですが、ぴったり来るような記事がなかったので、まとめておきます。&lt;/p&gt;
+
+&lt;p&gt;「GitHub Pages一応作ってみたけど、特に用途ないねえ。」&lt;br&gt;
+「Middleman？あー便利だよね。そんな使ったことないけど。」&lt;br&gt;
+「ブログ作り直したいけどサーバーにCMS設置するのやだ…めんどいし重い…。」&lt;/p&gt;
+
+&lt;p&gt;というような人に読んでもらえたら幸いです。&lt;/p&gt;
+
+&lt;h3 id="事前に用意するもの"&gt;事前に用意するもの&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;GitHub Pages（.ioドメイン）&lt;/li&gt;
+&lt;li&gt;Ruby環境（今回は2.1.0を使いました）&lt;/li&gt;
+&lt;li&gt;Middleman&lt;/li&gt;
+&lt;li&gt;bundler&lt;/li&gt;
+&lt;li&gt;黒い画面（ターミナル）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;一応GitHubユーザー向けなので、Gitと黒い画面はもうある程度使えるという前提で進めます。&lt;br&gt;
+あとRubyの環境はMiddlemanを使う上で必須です。GitHub Pagesも簡単に作れるので作っておきましょう。&lt;/p&gt;
+
+&lt;h3 id="middleman-blogを入れる"&gt;middleman-blogを入れる&lt;/h3&gt;
+
+&lt;p&gt;Middlemanが公式でサポートしている拡張機能でブログのひな形を作ってくれるジェネレータがgemであります。まずはそれをインストールして、プロジェクトを作成します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;$ gem install middleman-blog
+$ middleman init myblog --template=blog
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;�--template=blog&lt;/code&gt;�を加えることで、middleman-blogが勝手に中身を用意してくれます。中はこんな感じ。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;myblog
+ |- .gitignore
+ |- config.rb
+ |- Gemfile
+ |- Gemfile.lock
+ |- source
+    |- 2012-01-01-example-article.html.markdown
+    |- calendar.html.erb
+    |- feed.xml.builder
+    |- images
+    |- index.html.erb
+    |- javascripts
+    |- layout.erb
+    |- stylesheets
+    |- tag.html.erb
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;config.rb&lt;/code&gt;や&lt;code&gt;Gemfile&lt;/code&gt;、必要に応じて&lt;code&gt;Rakefile&lt;/code&gt;とか作って、ブログの設定をしていく感じです。&lt;code&gt;source&lt;/code&gt;の中がビルドされるので、コンテンツやスタイルシートなどは全部ここにぶち込みましょう。&lt;br&gt;
+erbじゃなくてhamlとかslim使いたいなどのカスタマイズについては、次の段階で説明します。&lt;/p&gt;
+
+&lt;h3 id="ローカルで確認する"&gt;ローカルで確認する&lt;/h3&gt;
+
+&lt;p&gt;とりあえずどんなのが出力されたか確認してみましょう。黒い画面で以下のコマンドを打ち込んでサーバーを立ち上げます。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;$ bundle exec middleman server
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;そして&lt;a href="http://localhost:4567/"&gt;http://localhost:4567/&lt;/a&gt;�にアクセス。&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="sample" src="http://gyazo.com/d512af5c41c4226f552bc96226a7ba87.png" /&gt;&lt;/p&gt;
+
+&lt;p&gt;ちゃんとひな形を作ってくれてました。cssが入ってないので質素な感じですが、記事の一覧とタグやアーカイブ一覧も出してくれてます。&lt;/p&gt;
+
+&lt;h3 id="新しい記事を書く"&gt;新しい記事を書く&lt;/h3&gt;
+
+&lt;p&gt;記事を書きます。CMSとかだと新規投稿作成とかのリンクをクリックするのですが、Middlemanではそれも黒い画面を使います。&lt;br&gt;
+新しい記事を生成するには、以下のコマンドを使います。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;$ bundle exec middleman article "Launching my blog"
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;そうすると、黒い画面に以下のログが出力されます。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;create  source/2014-02-01-launching-my-blog.html.markdown
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href="http://localhost:4567/"&gt;http://localhost:4567/�&lt;/a&gt;に確認しにいくとこのようになっています。&lt;/p&gt;
+
+&lt;p&gt;&lt;img alt="sample2" src="http://gyazo.com/2790a69b5a771a284cf29bb668eb07e3.png" /&gt;&lt;/p&gt;
+
+&lt;p&gt;ちゃんとできてました。ちなみに上の&lt;code&gt;�&amp;quot;Launching my blog&amp;quot;&lt;/code&gt;�のところは英語推奨です。URLに日本語が設定されてしまうので、あいうえお.html.markdownとかになってしまいます。&lt;br&gt;
+先ほど生成されたmarkdownのファイルのなかで記事のタイトルを変更できるので、生成するときは英語にしておきましょう。&lt;/p&gt;
+
+&lt;h3 id="デプロイする"&gt;デプロイする&lt;/h3&gt;
+
+&lt;p&gt;ようやくここまで来ました。まずは必要なデプロイに必要なgemを入れます。Gemfileを開いて&lt;code&gt;gem &amp;#39;middleman-deploy&amp;#39;&lt;/code&gt;を追加してください。�そのあとに、&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;$ bundle install --path=vendor
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;で、必要なgem群をインストールします。デプロイするために必要なツールたちです。&lt;/p&gt;
+
+&lt;p&gt;その後、今度は&lt;code&gt;config.rb&lt;/code&gt;を開いて、以下のコードを追加してください。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;�activate :deploy do |deploy|
+  deploy.method = :git
+  deploy.branch = 'master'
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;デプロイする方法とブランチを設定します。そしたら最後にビルドとデプロイです。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;$ bundle exec middleman build
+$ bundle exec middleman deploy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;で、実はこのままだとデプロイできないよ！って怒られます。黒い画面で以下のように叱責されます。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;## Deploying via git to remote="origin" and branch="master"
+Can't deploy! Please add a remote with the name 'origin' to your repo.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;originっていうリモートリポジトリが設定されていないのが原因ですね。リモートを設定しましょう。&lt;/p&gt;
+&lt;pre&gt;&lt;code class="highlight plaintext"&gt;$ git remote add git@github.com:USER/USER.github.io.git
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;そして再度 &lt;code&gt;$ bundle exec middleman deploy&lt;/code&gt;�をすれば完了です。&lt;/p&gt;
+
+&lt;p&gt;実はここ、ドメインやプロジェクトページによって少々操作や設定が異なって、gh-pagesっていうブランチからじゃないとデプロイできないってことがあるらしいです。今回は&lt;code&gt;�http://USER.github.io/&lt;/code&gt;�にブログを設置するという前提で行っております。&lt;/p&gt;
+
+&lt;p&gt;以上で、GitHub PagesにMiddlemanでブログを構築することができます。カスタマイズなどは今後自分でもやりながら公開していきたいと思います。&lt;/p&gt;
+
+&lt;p&gt;よいブログライフを！&lt;/p&gt;
+
+&lt;p&gt;参考にした記事&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://joey.aghion.com/building-a-blog-with-middleman-and-github-pages/"&gt;http://joey.aghion.com/building-a-blog-with-middleman-and-github-pages/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://blog.coiney.com/2013/06/21/host-middleman-blog-on-github/"&gt;http://blog.coiney.com/2013/06/21/host-middleman-blog-on-github/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://middlemanapp.com/jp/basics/blogging/"&gt;http://middlemanapp.com/jp/basics/blogging/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://camuro.org/blog/2013/09/renewal.html"&gt;http://camuro.org/blog/2013/09/renewal.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+  </entry>
+  <entry>
+    <title>こっそりブログ移行する</title>
+    <link rel="alternate" href="http://blog.url.com/blog/2014/01/30/launching-my-blog.html"/>
+    <id>http://blog.url.com/blog/2014/01/30/launching-my-blog.html</id>
+    <published>2014-01-30T13:14:00+09:00</published>
+    <updated>2014-07-13T17:00:28+09:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;p&gt;新しいブログ作りました。&lt;br&gt;
+末端デザイナーのほらおです。&lt;br&gt;
+なんとなくインターネットの海に点在するブログをまとめたくなって、やっちまいました。&lt;/p&gt;
+
+&lt;p&gt;元々octopress使おうかなと思ってたのですが、やっぱmiddleman-blogにしました。&lt;br&gt;
+octopressよりもごちゃっとしてなくてカスタマイズがしやすそうだったので。&lt;br&gt;
+テーマ自分で作れるし、便利gemが見つかりやすいし。&lt;br&gt;
+（でもサードパーティテーマとか楽にインストールできるのはoctopressでしょうね。）&lt;/p&gt;
+
+&lt;p&gt;とりあえずこっそり移行準備を整えていきます。&lt;/p&gt;
+</content>
+  </entry>
+</feed>
